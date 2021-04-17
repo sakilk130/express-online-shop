@@ -20,6 +20,17 @@ exports.getProducts = (req, res, next) => {
   });
 };
 
+exports.getProduct = (req, res, next) => {
+  const productID = req.params.productID;
+  Product.findById(productID, (product) => {
+    res.render('shop/product-details', {
+      product: product,
+      docTitle: 'Product',
+      path: '/products',
+    });
+  });
+};
+
 exports.getCart = (req, res, next) => {
   res.render('shop/cart', { docTitle: 'Cart', path: '/cart' });
 };
