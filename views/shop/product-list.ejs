@@ -9,29 +9,27 @@
     <main>
         <% if(products.length > 0) {%> 
       <div class="grid">
-          <% for(let i = 0; i < products.length; i++){ %> 
+          <% for(let product of products){ %> 
         <article class="card product-item">
           <header class="card__header">
-            <h1 class="product__title"><%= products[i].title %> </h1>
+            <h1 class="product__title"><%= product.title %> </h1>
           </header>
           <div class="card__image">
             <img
-              src="<%= products[i].imageUrl %> "
+              src="<%= product.imageUrl %> "
               alt="A Book"
             />
           </div>
           <div class="card__content">
-            <h2 class="product__price">$<%= products[i].price  %> </h2>
+            <h2 class="product__price">$<%= product.price  %> </h2>
             <p class="product__description">
-              <%= products[i].description  %> 
+              <%= product.description  %> 
             </p>
           </div>
           <div class="card__actions">
             
-            <a href="/products/<%= products[i].id %> " class="btn">Details</a>
-            <form action="/add-to-cart" method="POST">
-              <button class="btn">Add to Cart</button>
-            </form>
+            <a href="/products/<%= product.id %> " class="btn">Details</a>
+            <%- include('../includes/add-to-cart.ejs',{product: product}) %>
 
           </div>
         </article>
