@@ -4,9 +4,9 @@ const bodyParser = require('body-parser');
 
 const shopRoutes = require('./routes/shop.js');
 const adminRoutes = require('./routes/admin.js');
-const { static } = require('express');
 const PORT = process.env.PORT || 4000;
 const errorController = require('./controllers/error');
+const db = require('./util/database');
 
 app.use(express.static('public'));
 app.use(bodyParser.urlencoded({ extended: false }));
