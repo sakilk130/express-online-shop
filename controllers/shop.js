@@ -115,16 +115,26 @@ exports.postCartDeleteItem = (req, res, next) => {
 };
 
 exports.getOrders = (req, res, next) => {
-  res.render('shop/orders', {
-    docTitle: 'Orders',
-    path: '/orders',
-  });
+  req.user
+    .getOrders({ include: ['products'] })
+    .then((orders) => {
+      res.render('shop/orders', {
+        docTitle: 'Orders',
+        path: '/orders',
+        orders: orders,
+      });
+    })
+    .catch((err) => {
+      console.log(err);
+    });
 };
 
 exports.postOrder = (req, res, next) => {
+  let fetchCart;
   req.user
     .getCart()
     .then((cart) => {
+      fetchCart = cart;
       return cart.getProducts();
     })
     .then((products) => {
@@ -140,7 +150,10 @@ exports.postOrder = (req, res, next) => {
         })
         .catch((err) => console.log(err));
     })
-    .then(() => {
+    .then((result) => {
+      return fetchCart.setProducts(null);
+    })
+    .then((result) => {
       res.redirect('/order');
     })
     .catch((err) => console.log(err));
