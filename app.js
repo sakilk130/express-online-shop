@@ -1,7 +1,6 @@
 const express = require('express');
 const app = express();
 const bodyParser = require('body-parser');
-
 const shopRoutes = require('./routes/shop.js');
 const adminRoutes = require('./routes/admin.js');
 const PORT = process.env.PORT || 4000;
@@ -41,8 +40,8 @@ Cart.belongsToMany(Product, { through: CartItem });
 Product.belongsToMany(Cart, { through: CartItem });
 
 sequelize
-  .sync({ force: true })
-  // .sync()
+  // .sync({ force: true })
+  .sync()
   .then((results) => {
     return User.findOne({ where: { id: 1 } });
   })
@@ -53,6 +52,9 @@ sequelize
     return user;
   })
   .then((user) => {
+    return user.createCart();
+  })
+  .then((cart) => {
     // console.log(user);
     app.listen(PORT, () => {
       console.log(`server is running on port : ${PORT}`);
