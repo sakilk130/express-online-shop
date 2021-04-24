@@ -1,7 +1,7 @@
 const express = require('express');
 const app = express();
 const bodyParser = require('body-parser');
-// const shopRoutes = require('./routes/shop.js');
+const shopRoutes = require('./routes/shop.js');
 const adminRoutes = require('./routes/admin.js');
 const PORT = process.env.PORT || 4000;
 const errorController = require('./controllers/error');
@@ -26,7 +26,7 @@ app.set('view engine', 'ejs');
 app.set('views', 'views');
 
 app.use('/admin', adminRoutes);
-// app.use(shopRoutes);
+app.use(shopRoutes);
 
 // error page
 app.use(errorController.get404);
