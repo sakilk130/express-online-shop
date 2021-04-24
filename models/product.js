@@ -1,17 +1,25 @@
 const getDB = require('../util/database').getDB;
 const mongodb = require('mongodb');
 class Product {
-  constructor(title, imageUrl, price, description) {
+  constructor(id, title, imageUrl, price, description) {
     this.title = title;
     this.imageUrl = imageUrl;
     this.price = price;
     this.description = description;
+    this.id = id;
   }
   save() {
     const db = getDB();
-    return db
-      .collection('products')
-      .insertOne(this)
+    let dbOp;
+
+    if (this.id) {
+      dbOp = db
+        .collection('products')
+        .updateOne({ _id: new mongodb.ObjectId(this.id) }, { $set: this });
+    } else {
+      dbOp = db.collection('products').insertOne(this);
+    }
+    return dbOp
       .then((result) => {
         console.log(result);
       })
