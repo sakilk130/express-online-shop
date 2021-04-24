@@ -7,21 +7,22 @@ const PORT = process.env.PORT || 4000;
 const errorController = require('./controllers/error');
 const mongoConnect = require('./util/database').mongoConnect;
 const getDB = require('./util/database').getDB;
+const User = require('./models/user');
 
 app.use(express.static('public'));
 app.use(bodyParser.urlencoded({ extended: false }));
 
 app.use((req, res, next) => {
-  // User.findOne({ where: { id: 1 } })
-  //   .then((user) => {
-  //     req.user = user;
-  //     next();
-  //   })
-  //   .catch((err) => {
-  //     console.log(err);
-  //   });
-  next();
+  User.findById('6083f65e2c701bb719dceaa0')
+    .then((user) => {
+      req.user = user;
+      next();
+    })
+    .catch((err) => {
+      console.log(err);
+    });
 });
+
 app.set('view engine', 'ejs');
 app.set('views', 'views');
 
