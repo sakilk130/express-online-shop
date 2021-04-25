@@ -55,8 +55,8 @@ class User {
 
   getCart() {
     const db = getDB();
-    const productIds = this.cart.items.map((i) => {
-      return i.productId;
+    const productIds = this.cart.items.map((item) => {
+      return item.productId;
     });
     return db
       .collection('products')
@@ -72,6 +72,53 @@ class User {
           };
         });
       });
+  }
+
+  deleteCart(productId) {
+    const updatedCartItems = this.cart.items.filter((item) => {
+      return item.productId.toString() !== productId.toString();
+    });
+    const updatedCart = {
+      items: updatedCartItems,
+    };
+    const db = getDB();
+    return db
+      .collection('users')
+      .updateOne(
+        { _id: new mongodb.ObjectId(this._id) },
+        { $set: { cart: updatedCart } }
+      );
+  }
+
+  addOrder() {
+    const db = getDB();
+    return this.getCart()
+      .then((products) => {
+        const cart = {
+          items: products,
+          user: {
+            _id: new mongodb.ObjectId(this._id),
+            name: this.name,
+          },
+        };
+        return db.collection('orders').insertOne(cart);
+      })
+      .then((result) => {
+        this.cart = { items: [] };
+        return db
+          .collection('users')
+          .updateOne(
+            { _id: new mongodb.ObjectId(this._id) },
+            { $set: { cart: { items: [] } } }
+          );
+      });
+  }
+  getOrder() {
+    const db = getDB();
+    return db
+      .collection('orders')
+      .find({ 'user._id': new mongodb.ObjectId(this._id) })
+      .toArray();
   }
 }
 
