@@ -7,6 +7,7 @@ const PORT = process.env.PORT || 4000;
 const errorController = require('./controllers/error');
 const User = require('./models/user');
 const mongoose = require('mongoose');
+const authRoute = require('./routes/auth.js');
 
 app.use(express.static('public'));
 app.use(bodyParser.urlencoded({ extended: false }));
@@ -27,6 +28,7 @@ app.set('views', 'views');
 
 app.use('/admin', adminRoutes);
 app.use(shopRoutes);
+app.use(authRoute);
 
 // error page
 app.use(errorController.get404);
