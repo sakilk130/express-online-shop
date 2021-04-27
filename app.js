@@ -35,7 +35,7 @@ app.use(errorController.get404);
 
 mongoose
   .connect(
-    'mongodb+srv://admin:q9D88BcLquJCH3B7@cluster0.jmdlh.mongodb.net/express-online-shop?retryWrites=true&w=majority'
+    'mongodb+srv://admin:OSLG4FkU6AaIRWpF@cluster0.jmdlh.mongodb.net/express-online-shop?retryWrites=true&w=majority'
   )
   .then((result) => {
     const user = new User({

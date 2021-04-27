@@ -19,7 +19,8 @@
         >
       </li>
 
-      <!-- <li class="main-header__item">
+      <% if(isAuthenticated){ %>
+      <li class="main-header__item">
         <a
           href="/admin/add-product"
           class="<%= path=== '/admin/add-product' ? 'active' : '' %>"
@@ -32,7 +33,8 @@
           class="<%= path=== '/admin/products' ? 'active' : '' %>"
           >Admin Products</a
         >
-      </li> -->
+      </li>
+      <% } %>
     </ul>
     <ul class="main-header__item-list">
       <li class="main-header__item">
