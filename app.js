@@ -8,9 +8,26 @@ const errorController = require('./controllers/error');
 const User = require('./models/user');
 const mongoose = require('mongoose');
 const authRoute = require('./routes/auth.js');
+const session = require('express-session');
+const MongoSessionStore = require('connect-mongodb-session')(session);
+const MONGODB_URL =
+  'mongodb+srv://admin:OSLG4FkU6AaIRWpF@cluster0.jmdlh.mongodb.net/express-online-shop?retryWrites=true&w=majority';
 
+const MongoDBStore = new MongoSessionStore({
+  uri: MONGODB_URL,
+  collection: 'sessions',
+});
 app.use(express.static('public'));
 app.use(bodyParser.urlencoded({ extended: false }));
+
+app.use(
+  session({
+    secret: 'my-secret',
+    resave: false,
+    saveUninitialized: false,
+    store: MongoDBStore,
+  })
+);
 
 app.use((req, res, next) => {
   User.findById('60865f4a63b9470ab8c04256')
@@ -34,9 +51,7 @@ app.use(authRoute);
 app.use(errorController.get404);
 
 mongoose
-  .connect(
-    'mongodb+srv://admin:OSLG4FkU6AaIRWpF@cluster0.jmdlh.mongodb.net/express-online-shop?retryWrites=true&w=majority'
-  )
+  .connect(MONGODB_URL)
   .then((result) => {
     const user = new User({
       name: 'sakil',

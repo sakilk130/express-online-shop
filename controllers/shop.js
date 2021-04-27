@@ -4,7 +4,7 @@ const Order = require('../models/orders');
 const product = require('../models/product');
 
 exports.getIndex = (req, res, next) => {
-  const isLoggedIn = req.get('Cookie').split('=')[1];
+  const isLoggedIn = req.get('Cookie').split('=')[1] == 'true';
   Product.find()
     .then((products) => {
       res.render('shop/index', {
@@ -20,7 +20,7 @@ exports.getIndex = (req, res, next) => {
 };
 
 exports.getProducts = (req, res, next) => {
-  const isLoggedIn = req.get('Cookie').split('=')[1];
+  const isLoggedIn = req.get('Cookie').split('=')[1] == 'true';
   Product.find()
     .then((products) => {
       res.render('shop/product-list', {
@@ -34,7 +34,7 @@ exports.getProducts = (req, res, next) => {
 };
 
 exports.getProduct = (req, res, next) => {
-  const isLoggedIn = req.get('Cookie').split('=')[1];
+  const isLoggedIn = req.get('Cookie').split('=')[1] == 'true';
   const productID = req.params.productID;
   Product.findById(productID)
     .then((product) => {
@@ -49,7 +49,7 @@ exports.getProduct = (req, res, next) => {
 };
 
 exports.getCart = (req, res, next) => {
-  const isLoggedIn = req.get('Cookie').split('=')[1];
+  const isLoggedIn = req.get('Cookie').split('=')[1] == 'true';
   req.user
     .populate('cart.items.productId')
     .execPopulate()
@@ -92,7 +92,7 @@ exports.postCartDeleteItem = (req, res, next) => {
 };
 
 exports.getOrders = (req, res, next) => {
-  const isLoggedIn = req.get('Cookie').split('=')[1];
+  const isLoggedIn = req.get('Cookie').split('=')[1] == 'true';
   Order.find({ 'user.userId': req.user._id })
     .then((orders) => {
       res.render('shop/orders', {

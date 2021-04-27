@@ -2,7 +2,7 @@ const Product = require('../models/product');
 const mongodb = require('mongodb');
 
 exports.getAddProduct = (req, res, next) => {
-  const isLoggedIn = req.get('Cookie').split('=')[1];
+  const isLoggedIn = req.get('Cookie').split('=')[1] == 'true';
   res.render('admin/edit-product', {
     docTitle: 'Add Product',
     path: '/admin/add-product',
@@ -36,7 +36,7 @@ exports.postAddProduct = (req, res, next) => {
 };
 
 exports.getProducts = (req, res, next) => {
-  const isLoggedIn = req.get('Cookie').split('=')[1];
+  const isLoggedIn = req.get('Cookie').split('=')[1] == 'true';
   Product.find()
     .then((products) => {
       console.log(products);
@@ -53,7 +53,7 @@ exports.getProducts = (req, res, next) => {
 };
 
 exports.getEditProduct = (req, res, next) => {
-  const isLoggedIn = req.get('Cookie').split('=')[1];
+  const isLoggedIn = req.get('Cookie').split('=')[1] == 'true';
   const editMode = req.query.edit;
   const productId = req.params.productId;
 
