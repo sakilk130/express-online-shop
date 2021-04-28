@@ -1,4 +1,4 @@
-const user = require('../models/user');
+const User = require('../models/user');
 
 exports.getLogin = (req, res, next) => {
   res.render('auth/login', {
@@ -9,8 +9,7 @@ exports.getLogin = (req, res, next) => {
 };
 
 exports.postLogin = (req, res, next) => {
-  user
-    .findById('60865f4a63b9470ab8c04256')
+  User.findById('60865f4a63b9470ab8c04256')
     .then((user) => {
       req.session.isLoggedIn = true;
       req.session.user = user;
@@ -27,4 +26,34 @@ exports.postLogout = (req, res, next) => {
     console.log('Error:', err);
     res.redirect('/');
   });
+};
+
+exports.getSignup = (req, res, next) => {
+  res.render('auth/signup', {
+    docTitle: 'Signup',
+    path: '/signup',
+    isAuthenticated: req.session.isLoggedIn,
+  });
+};
+
+exports.postSignup = (req, res, next) => {
+  const email = req.body.email;
+  const password = req.body.password;
+  const confirmPassword = req.body.confirmPassword;
+  User.findOne({ email: email })
+    .then((userData) => {
+      if (userData) {
+        return res.redirect('/signup');
+      }
+      const user = new User({
+        email: email,
+        password: password,
+        cart: { items: [] },
+      });
+      return user.save();
+    })
+    .then((result) => {
+      res.redirect('/login');
+    })
+    .catch((err) => console.log(err));
 };

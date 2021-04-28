@@ -54,18 +54,9 @@ app.use(errorController.get404);
 mongoose
   .connect(MONGODB_URL)
   .then((result) => {
-    const user = new User({
-      name: 'sakil',
-      email: 'sakil@sakil.com',
-      cart: { items: [] },
-    });
-    User.findOne().then((result) => {
-      if (!result) {
-        user.save();
-      }
-      app.listen(PORT, () => {
-        console.log(`server is running on port : ${PORT}`);
-      });
+    console.log('MongoDB Connected !');
+    app.listen(PORT, () => {
+      console.log(`server is running on port : ${PORT}`);
     });
   })
   .catch((err) => console.log(err));
