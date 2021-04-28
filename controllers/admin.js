@@ -2,12 +2,11 @@ const Product = require('../models/product');
 const mongodb = require('mongodb');
 
 exports.getAddProduct = (req, res, next) => {
-  const isLoggedIn = req.get('Cookie').split('=')[1] == 'true';
   res.render('admin/edit-product', {
     docTitle: 'Add Product',
     path: '/admin/add-product',
     editing: false,
-    isAuthenticated: isLoggedIn,
+    isAuthenticated: req.session.isLoggedIn,
   });
 };
 
@@ -36,7 +35,6 @@ exports.postAddProduct = (req, res, next) => {
 };
 
 exports.getProducts = (req, res, next) => {
-  const isLoggedIn = req.get('Cookie').split('=')[1] == 'true';
   Product.find()
     .then((products) => {
       console.log(products);
@@ -44,7 +42,7 @@ exports.getProducts = (req, res, next) => {
         products: products,
         docTitle: 'Products',
         path: '/admin/products',
-        isAuthenticated: isLoggedIn,
+        isAuthenticated: req.session.isLoggedIn,
       });
     })
     .catch((err) => {
@@ -53,7 +51,6 @@ exports.getProducts = (req, res, next) => {
 };
 
 exports.getEditProduct = (req, res, next) => {
-  const isLoggedIn = req.get('Cookie').split('=')[1] == 'true';
   const editMode = req.query.edit;
   const productId = req.params.productId;
 
@@ -70,7 +67,7 @@ exports.getEditProduct = (req, res, next) => {
         path: '/admin/edit-product',
         editing: editMode,
         product: product,
-        isAuthenticated: isLoggedIn,
+        isAuthenticated: req.session.isLoggedIn,
       });
     })
     .catch((err) => {
