@@ -30,14 +30,15 @@ app.use(
 );
 
 app.use((req, res, next) => {
-  User.findById('60865f4a63b9470ab8c04256')
+  if (!req.session.user) {
+    return next();
+  }
+  User.findById(req.session.user._id)
     .then((user) => {
       req.user = user;
       next();
     })
-    .catch((err) => {
-      console.log(err);
-    });
+    .catch((err) => console.log(err));
 });
 
 app.set('view engine', 'ejs');
