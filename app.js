@@ -10,6 +10,7 @@ const mongoose = require('mongoose');
 const authRoute = require('./routes/auth.js');
 const session = require('express-session');
 const MongoSessionStore = require('connect-mongodb-session')(session);
+const csrf = require('csurf');
 
 const MONGODB_URL =
   'mongodb+srv://admin:OSLG4FkU6AaIRWpF@cluster0.jmdlh.mongodb.net/express-online-shop?retryWrites=true&w=majority';
@@ -18,6 +19,9 @@ const MongoDBStore = new MongoSessionStore({
   uri: MONGODB_URL,
   collection: 'sessions',
 });
+
+const csrfProtection = csrf();
+
 app.use(express.static('public'));
 app.use(bodyParser.urlencoded({ extended: false }));
 
@@ -44,6 +48,9 @@ app.use((req, res, next) => {
 
 app.set('view engine', 'ejs');
 app.set('views', 'views');
+
+// csrf token generate
+app.use(csrfProtection);
 
 app.use('/admin', adminRoutes);
 app.use(shopRoutes);
