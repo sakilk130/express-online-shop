@@ -10,6 +10,7 @@ const mongoose = require('mongoose');
 const authRoute = require('./routes/auth.js');
 const session = require('express-session');
 const MongoSessionStore = require('connect-mongodb-session')(session);
+
 const MONGODB_URL =
   'mongodb+srv://admin:OSLG4FkU6AaIRWpF@cluster0.jmdlh.mongodb.net/express-online-shop?retryWrites=true&w=majority';
 
