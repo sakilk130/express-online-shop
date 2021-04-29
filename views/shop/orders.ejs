@@ -3,7 +3,7 @@
 </head>
 
 <body>
-    <%- include('../includes/navigation.ejs') %>
+    <%- include('../includes/navigation.ejs',{csrfToken:csrfToken}) %>
     <main>
         <% if (orders.length <= 0) { %>
             <h1>Nothing there!</h1>

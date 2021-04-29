@@ -10,8 +10,6 @@ exports.getIndex = (req, res, next) => {
         products: products,
         docTitle: 'Products',
         path: '/',
-        isAuthenticated: req.session.isLoggedIn,
-        csrfToken: req.csrfToken(),
       });
     })
     .catch((err) => {
@@ -26,7 +24,6 @@ exports.getProducts = (req, res, next) => {
         products: products,
         docTitle: 'Products',
         path: '/products',
-        isAuthenticated: req.session.isLoggedIn,
       });
     })
     .catch((err) => console.log(err));
@@ -40,7 +37,6 @@ exports.getProduct = (req, res, next) => {
         product: product,
         docTitle: product.title,
         path: '/products',
-        isAuthenticated: req.session.isLoggedIn,
       });
     })
     .catch((err) => console.log(err));
@@ -57,7 +53,6 @@ exports.getCart = (req, res, next) => {
         docTitle: 'Cart',
         path: '/cart',
         cartProducts: products,
-        isAuthenticated: req.session.isLoggedIn,
       });
     })
     .catch((err) => console.log(err));
@@ -95,7 +90,6 @@ exports.getOrders = (req, res, next) => {
         docTitle: 'Orders',
         path: '/orders',
         orders: orders,
-        isAuthenticated: req.session.isLoggedIn,
       });
     })
     .catch((err) => {
@@ -124,7 +118,7 @@ exports.postOrder = (req, res, next) => {
       return req.user.clearCart();
     })
     .then((result) => {
-      res.redirect('/order');
+      res.redirect('/orders');
     })
     .catch((err) => console.log(err));
 };

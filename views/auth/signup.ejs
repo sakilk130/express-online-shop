@@ -5,7 +5,7 @@
   </head>
 
   <body>
-    <%- include('../includes/navigation') %> 
+    <%- include('../includes/navigation', {csrfToken: csrfToken}) %> 
 
     <main>
       <form class="product-form" action="/signup" method="POST">
@@ -21,6 +21,7 @@
             <label for="confirmPassword">Confirm Password</label>
             <input type="password" name="confirmPassword" id="confirmPassword">
         </div>
+        <input type="hidden" name="_csrf" value="<%= csrfToken  %>" />
           <button class="btn" type="submit">Login</button>
       </form>
   </main>

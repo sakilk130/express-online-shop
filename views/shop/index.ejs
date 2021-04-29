@@ -4,7 +4,7 @@
   </head>
 
   <body>
-    <%- include('../includes/navigation') %> 
+    <%- include('../includes/navigation', {csrfToken: csrfToken}) %> 
 
     <main>
         <% if(products.length > 0) {%> 
@@ -29,7 +29,7 @@
           
           <div class="card__actions">
             <% if(isAuthenticated){ %>
-            <%- include('../includes/add-to-cart', {product: product})  %> 
+            <%- include('../includes/add-to-cart', {product: product, csrfToken: csrfToken})  %> 
             <% } %> 
           </div>
         </article>

@@ -48,9 +48,14 @@ app.use((req, res, next) => {
 
 app.set('view engine', 'ejs');
 app.set('views', 'views');
-
 // csrf token generate
 app.use(csrfProtection);
+
+app.use((req, res, next) => {
+  res.locals.isAuthenticated = req.session.isLoggedIn;
+  res.locals.csrfToken = req.csrfToken();
+  next();
+});
 
 app.use('/admin', adminRoutes);
 app.use(shopRoutes);
