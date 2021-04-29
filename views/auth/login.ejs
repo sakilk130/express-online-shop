@@ -9,6 +9,9 @@
 
     <main>
       <form class="product-form" action="/login" method="POST">
+        <% if (errorMessage) { %>
+          <div class="user-message user-message--error"><%= errorMessage %></div>
+        <% } %>
           <div class="form-control">
               <label for="email">E-mail</label>
               <input type="text" name="email" id="email">

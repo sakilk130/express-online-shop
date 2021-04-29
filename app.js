@@ -11,6 +11,7 @@ const authRoute = require('./routes/auth.js');
 const session = require('express-session');
 const MongoSessionStore = require('connect-mongodb-session')(session);
 const csrf = require('csurf');
+const flash = require('connect-flash');
 
 const MONGODB_URL =
   'mongodb+srv://admin:OSLG4FkU6AaIRWpF@cluster0.jmdlh.mongodb.net/express-online-shop?retryWrites=true&w=majority';
@@ -50,6 +51,7 @@ app.set('view engine', 'ejs');
 app.set('views', 'views');
 // csrf token generate
 app.use(csrfProtection);
+app.use(flash());
 
 app.use((req, res, next) => {
   res.locals.isAuthenticated = req.session.isLoggedIn;
