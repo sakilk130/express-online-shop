@@ -7,7 +7,7 @@ const transpoter = nodemailer.createTransport(
   sendGridTransport({
     auth: {
       api_key:
-        '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',
+        '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',
     },
   })
 );
@@ -83,7 +83,10 @@ exports.postSignup = (req, res, next) => {
   User.findOne({ email: email })
     .then((userData) => {
       if (userData) {
-        req.flash('error', 'E-mail already exists');
+        req.flash(
+          'error',
+          'E-Mail exists already, please pick a different one.'
+        );
         return res.redirect('/signup');
       }
       return bcrypt
@@ -100,7 +103,7 @@ exports.postSignup = (req, res, next) => {
           res.redirect('/login');
           return transpoter.sendMail({
             to: email,
-            from: 'sakil.office1@gmail.com',
+            from: 'sakil.khan@papint.asia',
             subject: 'Signup Successful !',
             html: '<h1>You Successfully Signed up !</h1>',
           });
