@@ -14,11 +14,11 @@
         <% } %>
           <div class="form-control">
               <label for="email">E-mail</label>
-              <input type="text" name="email" id="email">
+              <input type="text" name="email" id="email" value="<%= oldValues.email %>" class="<%= validationErrors.find(p=>p.param==='email') ? 'invalid' : '' %>">
           </div>
           <div class="form-control">
               <label for="password">Password</label>
-              <input type="password" name="password" id="password">
+              <input type="password" name="password" id="password" value="<%= oldValues.password %>" class="<%= validationErrors.find(p=>p.param==='password') ? 'invalid' : '' %>">
           </div>
           <input type="hidden" name="_csrf" value="<%= csrfToken  %>" />
           <button class="btn" type="submit">Login</button>

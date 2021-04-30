@@ -9,21 +9,27 @@
 
     <main>
      
-      <form class="product-form" action="/signup" method="POST">
+      <form class="product-form" action="/signup" method="POST" novalidate>
         <% if (errorMessage) { %>
           <div class="user-message user-message--error"><%= errorMessage %></div>
         <% } %>
           <div class="form-control">
               <label for="email">E-mail</label>
-              <input type="text" name="email" id="email">
+              <input type="email" name="email" id="email" value="<%= oldValues.email %>" 
+              class="<%= validationErrors.find(p=>p.param==='email') ? "invalid" : '' %>"
+              >
           </div>
           <div class="form-control">
               <label for="password">Password</label>
-              <input type="password" name="password" id="password">
+              <input type="password" name="password" id="password" value="<%= oldValues.password %>"
+              class="<%= validationErrors.find(p=>p.param==='password') ? "invalid" : '' %>"
+              >
           </div>
           <div class="form-control">
             <label for="confirmPassword">Confirm Password</label>
-            <input type="password" name="confirmPassword" id="confirmPassword">
+            <input type="password" name="confirmPassword" id="confirmPassword" value="<%= oldValues.confirmPassword %>"
+            class="<%= validationErrors.find(p=>p.param==='confirmPassword') ? "invalid" : '' %>"
+            >
         </div>
         <input type="hidden" name="_csrf" value="<%= csrfToken  %>" />
           <button class="btn" type="submit">Signup</button>

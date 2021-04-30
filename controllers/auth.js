@@ -3,6 +3,7 @@ const bcrypt = require('bcryptjs');
 const nodemailer = require('nodemailer');
 const sendGridTransport = require('nodemailer-sendgrid-transport');
 const crypto = require('crypto');
+const { validationResult } = require('express-validator/check');
 
 const transpoter = nodemailer.createTransport(
   sendGridTransport({
@@ -25,17 +26,44 @@ exports.getLogin = (req, res, next) => {
     docTitle: 'Login',
     path: '/login',
     errorMessage: message,
+    oldValues: {
+      email: '',
+      password: '',
+    },
+    validationErrors: [],
   });
 };
 
 exports.postLogin = (req, res, next) => {
   const email = req.body.email;
   const password = req.body.password;
+  const errors = validationResult(req);
+
+  if (!errors.isEmpty()) {
+    return res.status(422).render('auth/login', {
+      docTitle: 'Login',
+      path: '/login',
+      errorMessage: errors.array()[0].msg,
+      oldValues: {
+        email: email,
+        password: password,
+      },
+      validationErrors: errors.array(),
+    });
+  }
   User.findOne({ email: email })
     .then((user) => {
       if (!user) {
-        req.flash('error', 'invalid email or password !');
-        return res.redirect('/login');
+        return res.status(422).render('auth/login', {
+          docTitle: 'Login',
+          path: '/login',
+          errorMessage: 'invalid email or password !',
+          oldValues: {
+            email: email,
+            password: password,
+          },
+          validationErrors: [],
+        });
       }
       bcrypt
         .compare(password, user.password)
@@ -48,8 +76,16 @@ exports.postLogin = (req, res, next) => {
               res.redirect('/');
             });
           }
-          req.flash('error', 'invalid email or password !');
-          res.redirect('/login');
+          return res.status(422).render('auth/login', {
+            docTitle: 'Login',
+            path: '/login',
+            errorMessage: 'invalid email or password !',
+            oldValues: {
+              email: email,
+              password: password,
+            },
+            validationErrors: [],
+          });
         })
         .catch((err) => console.log(err));
     })
@@ -74,6 +110,12 @@ exports.getSignup = (req, res, next) => {
     docTitle: 'Signup',
     path: '/signup',
     errorMessage: message,
+    oldValues: {
+      email: '',
+      password: '',
+      confirmPassword: '',
+    },
+    validationErrors: [],
   });
 };
 
@@ -81,37 +123,40 @@ exports.postSignup = (req, res, next) => {
   const email = req.body.email;
   const password = req.body.password;
   const confirmPassword = req.body.confirmPassword;
-  User.findOne({ email: email })
-    .then((userData) => {
-      if (userData) {
-        req.flash(
-          'error',
-          'E-Mail exists already, please pick a different one.'
-        );
-        return res.redirect('/signup');
-      }
-      return bcrypt
-        .hash(password, 12)
-        .then((hashedPassword) => {
-          const user = new User({
-            email: email,
-            password: hashedPassword,
-            cart: { items: [] },
-          });
-          return user.save();
-        })
-        .then((result) => {
-          res.redirect('/login');
-          return transpoter.sendMail({
-            to: email,
-            from: 'sakil.khan@papint.asia',
-            subject: 'Signup Successful !',
-            html: '<h1>You Successfully Signed up !</h1>',
-          });
-        })
-        .catch((err) => console.log(err));
-    })
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    return res.status(422).render('auth/signup', {
+      docTitle: 'Signup',
+      path: '/signup',
+      errorMessage: errors.array()[0].msg,
+      oldValues: {
+        email: email,
+        password: password,
+        confirmPassword: confirmPassword,
+      },
+      validationErrors: errors.array(),
+    });
+  }
 
+  return bcrypt
+    .hash(password, 12)
+    .then((hashedPassword) => {
+      const user = new User({
+        email: email,
+        password: hashedPassword,
+        cart: { items: [] },
+      });
+      return user.save();
+    })
+    .then((result) => {
+      res.redirect('/login');
+      return transpoter.sendMail({
+        to: email,
+        from: 'sakil.khan@papint.asia',
+        subject: 'Signup Successful !',
+        html: '<h1>You Successfully Signed up !</h1>',
+      });
+    })
     .catch((err) => console.log(err));
 };
 
