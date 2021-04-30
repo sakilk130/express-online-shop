@@ -23,6 +23,9 @@ const MongoDBStore = new MongoSessionStore({
 
 const csrfProtection = csrf();
 
+app.set('view engine', 'ejs');
+app.set('views', 'views');
+
 app.use(express.static('public'));
 app.use(bodyParser.urlencoded({ extended: false }));
 
@@ -35,20 +38,6 @@ app.use(
   })
 );
 
-app.use((req, res, next) => {
-  if (!req.session.user) {
-    return next();
-  }
-  User.findById(req.session.user._id)
-    .then((user) => {
-      req.user = user;
-      next();
-    })
-    .catch((err) => console.log(err));
-});
-
-app.set('view engine', 'ejs');
-app.set('views', 'views');
 // csrf token generate
 app.use(csrfProtection);
 app.use(flash());
@@ -59,19 +48,46 @@ app.use((req, res, next) => {
   next();
 });
 
+app.use((req, res, next) => {
+  if (!req.session.user) {
+    return next();
+  }
+  User.findById(req.session.user._id)
+    .then((user) => {
+      if (!user) {
+        next();
+      }
+      req.user = user;
+      next();
+    })
+    .catch((err) => {
+      next(new Error(err));
+    });
+});
+
 app.use('/admin', adminRoutes);
 app.use(shopRoutes);
 app.use(authRoute);
 
 // error page
+app.get('/500', errorController.get500);
 app.use(errorController.get404);
+
+app.use((error, req, res, next) => {
+  res.status(500).render('500', {
+    docTitle: 'Error!',
+    path: '/500',
+    isAuthenticated: req.session.isLoggedIn,
+  });
+});
 
 mongoose
   .connect(MONGODB_URL)
   .then((result) => {
-    console.log('MongoDB Connected !');
     app.listen(PORT, () => {
       console.log(`server is running on port : ${PORT}`);
     });
   })
-  .catch((err) => console.log(err));
+  .catch((err) => {
+    console.log(err);
+  });
