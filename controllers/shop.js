@@ -2,6 +2,9 @@ const Product = require('../models/product');
 const User = require('../models/user');
 const Order = require('../models/orders');
 const product = require('../models/product');
+const fs = require('fs');
+const path = require('path');
+const orders = require('../models/orders');
 
 exports.getIndex = (req, res, next) => {
   Product.find()
@@ -121,4 +124,34 @@ exports.postOrder = (req, res, next) => {
       res.redirect('/orders');
     })
     .catch((err) => console.log(err));
+};
+
+exports.getInvoice = (req, res, next) => {
+  const orderId = req.params.orderId;
+  const invoiceName = 'invoice-' + orderId + '.pdf';
+  const invoicePath = path.join('data', 'invoices', invoiceName);
+
+  Order.findById(orderId)
+    .then((order) => {
+      if (!order) {
+        return next(new Error('Order Not found'));
+      }
+      if (order.user.userId.toString() !== req.user._id.toString()) {
+        return next(new Error('Unauthorized'));
+      }
+      fs.readFile(invoicePath, (err, data) => {
+        if (err) {
+          return next();
+        }
+        res.setHeader('Content-Type', 'application/pdf');
+        res.setHeader(
+          'Content-Disposition',
+          'inline; filename="' + invoicePath + '"'
+        );
+        res.send(data);
+      });
+    })
+    .catch((err) => {
+      return next(err);
+    });
 };
