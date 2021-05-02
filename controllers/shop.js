@@ -5,6 +5,7 @@ const product = require('../models/product');
 const fs = require('fs');
 const path = require('path');
 const orders = require('../models/orders');
+const pdfDocument = require('pdfkit');
 
 exports.getIndex = (req, res, next) => {
   Product.find()
@@ -110,7 +111,7 @@ exports.postOrder = (req, res, next) => {
       });
       const order = new Order({
         user: {
-          name: req.user.email,
+          email: req.user.email,
           userId: req.user,
         },
         products: products,
@@ -139,17 +140,37 @@ exports.getInvoice = (req, res, next) => {
       if (order.user.userId.toString() !== req.user._id.toString()) {
         return next(new Error('Unauthorized'));
       }
-      fs.readFile(invoicePath, (err, data) => {
-        if (err) {
-          return next();
-        }
-        res.setHeader('Content-Type', 'application/pdf');
-        res.setHeader(
-          'Content-Disposition',
-          'inline; filename="' + invoicePath + '"'
-        );
-        res.send(data);
+      const pdfDoc = new pdfDocument();
+      res.setHeader('Content-Type', 'application/pdf');
+      res.setHeader(
+        'Content-Disposition',
+        'inline; filename="' + invoicePath + '"'
+      );
+      pdfDoc.pipe(fs.createWriteStream(invoicePath));
+      pdfDoc.pipe(res);
+      pdfDoc.fontSize(26).text('Invoice', {
+        underline: true,
       });
+      pdfDoc.text('---------------------------------');
+      let totalPrice = 0;
+      // console.log(order.products[0].products.price);
+      order.products.forEach((prod) => {
+        totalPrice += prod.quantity * prod.products.price;
+        pdfDoc
+          .fontSize(20)
+          .text(
+            prod.products.title +
+              '-' +
+              prod.quantity +
+              'x' +
+              '$' +
+              prod.products.price
+          );
+      });
+      pdfDoc.text('---');
+      pdfDoc.text('Total Price: $' + totalPrice);
+
+      pdfDoc.end();
     })
     .catch((err) => {
       return next(err);
