@@ -6,19 +6,32 @@ const fs = require('fs');
 const path = require('path');
 const orders = require('../models/orders');
 const pdfDocument = require('pdfkit');
+const pagination_per_page = 1;
 
 exports.getIndex = (req, res, next) => {
-  Product.find()
+  const page = +req.query.page || 1;
+  let totalItems;
+  Product.countDocuments()
+    .then((numProducts) => {
+      totalItems = numProducts;
+      return Product.find()
+        .skip((page - 1) * pagination_per_page)
+        .limit(pagination_per_page);
+    })
     .then((products) => {
       res.render('shop/index', {
         products: products,
         docTitle: 'Products',
         path: '/',
+        currentPage: page,
+        hasNextPage: pagination_per_page * page < totalItems,
+        hasPreviousPage: page > 1,
+        nextPage: page + 1,
+        previousPage: page - 1,
+        lastPage: Math.ceil(totalItems / pagination_per_page),
       });
     })
-    .catch((err) => {
-      console.log(err);
-    });
+    .catch((err) => next(err));
 };
 
 exports.getProducts = (req, res, next) => {
