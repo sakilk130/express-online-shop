@@ -6,7 +6,7 @@ const fs = require('fs');
 const path = require('path');
 const orders = require('../models/orders');
 const pdfDocument = require('pdfkit');
-const pagination_per_page = 1;
+const pagination_per_page = 3;
 
 exports.getIndex = (req, res, next) => {
   const page = +req.query.page || 1;
