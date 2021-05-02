@@ -35,15 +35,29 @@ exports.getIndex = (req, res, next) => {
 };
 
 exports.getProducts = (req, res, next) => {
-  Product.find()
+  const page = +req.query.page || 1;
+  let totalItems;
+  Product.countDocuments()
+    .then((numProducts) => {
+      totalItems = numProducts;
+      return Product.find()
+        .skip((page - 1) * pagination_per_page)
+        .limit(pagination_per_page);
+    })
     .then((products) => {
       res.render('shop/product-list', {
         products: products,
         docTitle: 'Products',
         path: '/products',
+        currentPage: page,
+        hasNextPage: pagination_per_page * page < totalItems,
+        hasPreviousPage: page > 1,
+        nextPage: page + 1,
+        previousPage: page - 1,
+        lastPage: Math.ceil(totalItems / pagination_per_page),
       });
     })
-    .catch((err) => console.log(err));
+    .catch((err) => next(err));
 };
 
 exports.getProduct = (req, res, next) => {
