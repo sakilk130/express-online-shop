@@ -6,6 +6,10 @@ const fs = require('fs');
 const path = require('path');
 const orders = require('../models/orders');
 const pdfDocument = require('pdfkit');
+
+const stripe = require('stripe')(
+  'sk_test_51In4FpE6DZq2CzOomGbST6OIkA70ZdCz13o3wxQWiIijek9OsrZB4ZDSqCOTfO90V9hiD6euqQMHCpSKH3dZ7OU900ShtXWudy'
+);
 const pagination_per_page = 3;
 
 exports.getIndex = (req, res, next) => {
@@ -128,11 +132,37 @@ exports.getOrders = (req, res, next) => {
     });
 };
 
-exports.postOrder = (req, res, next) => {
+exports.getCheckout = (req, res, next) => {
   req.user
     .populate('cart.items.productId')
     .execPopulate()
     .then((user) => {
+      const products = user.cart.items;
+      let totalSum = 0;
+      products.forEach((p) => {
+        totalSum += p.quantity * p.productId.price;
+      });
+      res.render('shop/checkout', {
+        docTitle: 'Checkout',
+        path: '/checkout',
+        products: products,
+        totalSum: totalSum,
+      });
+    });
+};
+
+exports.postOrder = (req, res, next) => {
+  const token = req.body.stripeToken;
+  let totalSum = 0;
+
+  req.user
+    .populate('cart.items.productId')
+    .execPopulate()
+    .then((user) => {
+      user.cart.items.forEach((p) => {
+        totalSum += p.quantity * p.productId.price;
+      });
+
       const products = user.cart.items.map((i) => {
         return { products: { ...i.productId._doc }, quantity: i.quantity };
       });
@@ -146,6 +176,13 @@ exports.postOrder = (req, res, next) => {
       return order.save();
     })
     .then((result) => {
+      const charge = stripe.charges.create({
+        amount: totalSum * 100,
+        currency: 'usd',
+        description: 'Demo Order',
+        source: token,
+        metadata: { order_id: result._id.toString() },
+      });
       return req.user.clearCart();
     })
     .then((result) => {
