@@ -1,3 +1,6 @@
+const dotenv = require('dotenv');
+dotenv.config();
+
 const express = require('express');
 const app = express();
 const bodyParser = require('body-parser');
@@ -13,15 +16,14 @@ const MongoSessionStore = require('connect-mongodb-session')(session);
 const csrf = require('csurf');
 const flash = require('connect-flash');
 const multer = require('multer');
-
 const shopController = require('./controllers/shop');
 const isAuth = require('./middleware/is-auth');
 
-const MONGODB_URL =
-  'mongodb+srv://admin:OSLG4FkU6AaIRWpF@cluster0.jmdlh.mongodb.net/express-online-shop?retryWrites=true&w=majority';
+// const MONGODB_URL =
+// 'mongodb+srv://admin:OSLG4FkU6AaIRWpF@cluster0.jmdlh.mongodb.net/express-online-shop?retryWrites=true&w=majority';
 
 const MongoDBStore = new MongoSessionStore({
-  uri: MONGODB_URL,
+  uri: process.env.MONGODB_URL,
   collection: 'sessions',
 });
 
@@ -119,7 +121,7 @@ app.use((error, req, res, next) => {
 });
 
 mongoose
-  .connect(MONGODB_URL)
+  .connect(process.env.MONGODB_URL)
   .then((result) => {
     app.listen(PORT, () => {
       console.log(`server is running on port : ${PORT}`);

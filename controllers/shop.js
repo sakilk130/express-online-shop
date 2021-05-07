@@ -7,9 +7,7 @@ const path = require('path');
 const orders = require('../models/orders');
 const pdfDocument = require('pdfkit');
 
-const stripe = require('stripe')(
-  'sk_test_51In4FpE6DZq2CzOomGbST6OIkA70ZdCz13o3wxQWiIijek9OsrZB4ZDSqCOTfO90V9hiD6euqQMHCpSKH3dZ7OU900ShtXWudy'
-);
+const stripe = require('stripe')(process.env.API_PAYMENT);
 const pagination_per_page = 3;
 
 exports.getIndex = (req, res, next) => {
