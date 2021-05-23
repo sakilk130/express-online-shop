@@ -4,7 +4,7 @@
   </head>
 
   <body>
-    <%- include('../includes/navigation') %> 
+    <%- include('../includes/navigation', {csrfToken: csrfToken}) %> 
 
     <main>
         <% if(products.length > 0) {%> 
@@ -26,13 +26,16 @@
               <%= product.description  %> 
             </p>
           </div>
+          
           <div class="card__actions">
-            <%- include('../includes/add-to-cart', {product: product})  %> 
-  
+            <% if(isAuthenticated){ %>
+            <%- include('../includes/add-to-cart', {product: product, csrfToken: csrfToken})  %> 
+            <% } %> 
           </div>
         </article>
         <%}  %> 
       </div> 
+      <%- include('../includes/pagination.ejs', {currentPage: currentPage, nextPage: nextPage, previousPage: previousPage, lastPage: lastPage, hasNextPage: hasNextPage, hasPreviousPage: hasPreviousPage}) %> 
       <% } else  {%> 
       <h1>Products not found !</h1>
       <%} %> 
